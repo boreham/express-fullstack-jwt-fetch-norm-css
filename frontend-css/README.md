@@ -1,27 +1,23 @@
-### Login, Register, Logout приложение защиты ресурсов React, React-router, TypeScript, Axios, Vite, Styled-components.
-
-### Структура проекта:
-
 ```
-frontnend/
+frontend/
 ├── public/
-│   
+│   └── favicon.ico
 ├── src/
 │   ├── components/
-│   │   └── HeaderComponent.tsx
+│   │   ├── HeaderComponent.tsx
 │   │   └── FooterComponent.tsx
 │   ├── pages/
-│   │   └── LoginPage.tsx
-│   │   └── RegisterPage.tsx
-│   │   └── HomePage.tsx
+│   │   ├── HomePage.tsx
+│   │   ├── LoginPage.tsx
+│   │   ├── RegisterPage.tsx
 │   │   └── ProtectedPage.tsx
 │   ├── routes/
-│   │   └── authRoutes.ts
+│   │   └── authRoutes.tsx
 │   ├── services/
 │   │   └── authService.ts
-|   ├── styles/
+│   ├── styles/
 │   │   └── auth.css
-|   ├── utils/
+│   ├── utils/
 │   │   └── validation.ts
 │   └── main.tsx
 ├── .env

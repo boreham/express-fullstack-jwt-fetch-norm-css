@@ -1,7 +1,6 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import * as authRepository from '../repositories/authRepository';
-import { User } from '@prisma/client';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '1h';
@@ -17,30 +16,27 @@ interface LoginInput {
   password: string;
 }
 
-export const registerUser = async ({ email, username, password }: RegisterInput): Promise<User> => {
-  // Проверка существования пользователя
+export const registerUser = async ({ email, username, password }: RegisterInput) => {
+  // Проверяем, существует ли пользователь с таким email
   const existingUser = await authRepository.findUserByEmail(email);
   if (existingUser) {
     throw new Error('Пользователь с таким email уже существует');
   }
-  // Хеширование пароля
+  // Хешируем пароль
   const hashedPassword = await bcrypt.hash(password, 10);
-  // Создание пользователя
   const user = await authRepository.createUser({ email, username, password: hashedPassword });
   return user;
 };
 
-export const loginUser = async ({ email, password }: LoginInput): Promise<string | null> => {
+export const loginUser = async ({ email, password }: LoginInput) => {
   const user = await authRepository.findUserByEmail(email);
   if (!user) {
     return null;
   }
-  // Сравнение паролей
-  const isPasswordValid = await bcrypt.compare(password, user.password);
-  if (!isPasswordValid) {
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
     return null;
   }
-  // Генерация JWT-токена
-  const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, { expiresIn: '1h'});
+  const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, { expiresIn: '1h' });
   return token;
 };

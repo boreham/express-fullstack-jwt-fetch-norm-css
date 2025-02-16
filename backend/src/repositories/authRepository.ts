@@ -1,6 +1,4 @@
-import { PrismaClient, User } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import pool from "../config/db";
 
 interface CreateUserInput {
   email: string;
@@ -8,20 +6,17 @@ interface CreateUserInput {
   password: string;
 }
 
-export const createUser = async ({ email, username, password }: CreateUserInput): Promise<User> => {
-  const user = await prisma.user.create({
-    data: {
-      email,
-      username,
-      password,
-    },
-  });
-  return user;
+export const createUser = async ({ email, username, password }: CreateUserInput) => {
+  const result = await pool.query(
+    `INSERT INTO users (email, username, password, created_at)
+     VALUES ($1, $2, $3, NOW())
+     RETURNING id, email, username, created_at`,
+    [email, username || null, password]
+  );
+  return result.rows[0];
 };
 
-export const findUserByEmail = async (email: string): Promise<User | null> => {
-  const user = await prisma.user.findUnique({
-    where: { email },
-  });
-  return user;
+export const findUserByEmail = async (email: string) => {
+  const result = await pool.query(`SELECT * FROM users WHERE email = $1`, [email]);
+  return result.rows[0];
 };
